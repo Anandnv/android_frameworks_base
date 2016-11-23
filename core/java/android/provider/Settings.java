@@ -3795,7 +3795,13 @@ public final class Settings {
         public static final String HIDE_LOCKSCREEN_CLOCK = "hide_lockscreen_clock";
 
         /**
+         * Whether to sync the battery tile stile with the statusbar battery icon style
          * @hide
+         */
+        public static final String STATUS_BAR_BATTERY_STYLE_TILE = "status_bar_battery_style_tile";
+
+        /**
+	 * @hide
          */
         public static final String STATUSBAR_BATTERY_BAR_ENABLE_CHARGING_COLOR = "battery_bar_enable_charging_color";
 
