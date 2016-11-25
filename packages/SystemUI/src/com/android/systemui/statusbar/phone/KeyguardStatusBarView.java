@@ -81,6 +81,7 @@ public class KeyguardStatusBarView extends RelativeLayout
 
     private TextView mCarrierLabel;
     private int mShowCarrierLabel;
+    private boolean mForceChargeBatteryText;
 
     private ContentObserver mObserver = new ContentObserver(new Handler()) {
         public void onChange(boolean selfChange, Uri uri) {
@@ -203,7 +204,7 @@ public class KeyguardStatusBarView extends RelativeLayout
             mBatteryLevel.setVisibility(mForceBatteryText ? View.VISIBLE : View.GONE);
         } else {
             mBatteryLevel.setVisibility(
-                    mBatteryCharging || mShowBatteryText ? View.VISIBLE : View.GONE);
+                    (mBatteryCharging && mForceChargeBatteryText) || mShowBatteryText || mForceBatteryText ? View.VISIBLE : View.GONE);
         }
 
         if (mCarrierLabel != null) {
@@ -400,5 +401,22 @@ public class KeyguardStatusBarView extends RelativeLayout
         super.onAttachedToWindow();
         getContext().getContentResolver().registerContentObserver(Settings.System.getUriFor(
                 "status_bar_show_carrier"), false, mObserver);
+    }
+
+    @Override
+    public void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+    }
+
+    @Override
+    public void onTuningChanged(String key, String newValue) {
+        if (key.equals(STATUS_BAR_SHOW_BATTERY_PERCENT)) {
+            mShowBatteryText = newValue == null ? false : Integer.parseInt(newValue) == 2;
+            mForceBatteryText = Settings.Secure.getInt(getContext().getContentResolver(),
+                    Settings.Secure.STATUS_BAR_BATTERY_STYLE, 0) == 6 ? true : false;
+            mForceChargeBatteryText = Settings.Secure.getInt(getContext().getContentResolver(),
+                    Settings.Secure.FORCE_CHARGE_BATTERY_TEXT, 1) == 1 ? true : false;
+            updateVisibilities();
+        }
     }
 }
